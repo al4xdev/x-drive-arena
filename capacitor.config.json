@@ -1,0 +1,13 @@
+{
+  "appId": "com.xdrive.arena",
+  "appName": "X-Drive Arena",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "ScreenOrientation": {
+      "orientation": "landscape"
+    }
+  }
+}

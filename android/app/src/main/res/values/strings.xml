@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">X-Drive Arena</string>
+    <string name="title_activity_main">X-Drive Arena</string>
+    <string name="package_name">com.xdrive.arena</string>
+    <string name="custom_url_scheme">com.xdrive.arena</string>
+</resources>

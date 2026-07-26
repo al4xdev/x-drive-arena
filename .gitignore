@@ -1,0 +1,23 @@
+# JavaScript dependencies and production output
+node_modules/
+dist/
+
+# Local tooling and captures
+.android-sdk/
+.playwright-mcp/
+
+# Android local state and generated output
+android/.gradle/
+android/local.properties
+android/**/build/
+android/**/build.bak/
+android/capacitor-cordova-android-plugins.bak/
+
+# Packaged applications
+*.apk
+*.aab
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo

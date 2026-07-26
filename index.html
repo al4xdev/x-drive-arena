@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a0f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="X-Drive Arena">
+  <title>BeyX Full-Screen Arena Digital - Beyblade X</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icon.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Rajdhani:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <!-- Canvas Background for Dynamic FX (Vampire Survivors Rayburst & Hyper Particles) -->
+  <canvas id="bg-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Background Diagonal Color Split -->
+  <div class="split-background"></div>
+
+  <!-- App Fullscreen Main View -->
+  <div id="app" class="fullscreen-arena">
+
+    <!-- Top Digital Broadcast Header -->
+    <header class="top-broadcast-bar">
+      <!-- Player 1 / Você Score -->
+      <div class="top-player-score score-red" id="header-score-red">
+        <div class="top-player-info">
+          <h2 class="player-name" id="display-blader1-name">VOCÊ</h2>
+        </div>
+        <div class="digital-num-box">
+          <span class="digital-num" id="blader1-score">0</span>
+        </div>
+      </div>
+
+      <!-- Center Match Status -->
+      <div class="top-match-center">
+        <div class="logo-badge">⚡ BEYBLADE <span class="highlight-x">X</span></div>
+        <div id="first-launcher-badge" class="first-launcher-badge">
+          <span class="badge-tag">PRIMEIRO LANÇAMENTO:</span>
+          <strong id="val-first-launcher">[ ESPAÇO PARA SORTEAR ]</strong>
+        </div>
+      </div>
+
+      <!-- Player 2 / Adversário Score -->
+      <div class="top-player-score score-blue" id="header-score-blue">
+        <div class="digital-num-box">
+          <span class="digital-num" id="blader2-score">0</span>
+        </div>
+        <div class="top-player-info">
+          <h2 class="player-name" id="display-blader2-name">ADVERSÁRIO</h2>
+        </div>
+      </div>
+
+      <!-- Hamburger Menu Toggle -->
+      <div class="header-menu-wrapper">
+        <button id="btn-hamburger" class="btn-hamburger" title="Menu" aria-label="Menu">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+        <div class="header-dropdown" id="header-dropdown">
+          <button id="btn-undo-score" class="btn-dropdown-item" title="Desfazer Último Turno (Atalho: Z)" disabled>
+            ↩️ <span>DESFAZER [Z]</span>
+          </button>
+          <button id="btn-history-toggle" class="btn-dropdown-item" title="Ver Histórico">
+            📜 <span>HISTÓRICO</span>
+          </button>
+          <button id="btn-config-toggle" class="btn-dropdown-item" title="Configurações">
+            ⚙️ <span>CONFIG</span>
+          </button>
+          <button id="btn-sound-toggle" class="btn-dropdown-item" title="Alternar Som">
+            <span id="sound-icon">🔊</span> <span>SOM</span>
+          </button>
+          <button id="btn-lang-toggle" class="btn-dropdown-item" title="Language / Idioma">
+            <span>🌐</span> <span id="lang-label">LANG: 🇺🇸 EN</span>
+          </button>
+          <button id="btn-quick-reset" class="btn-dropdown-item" title="Reiniciar Placar">
+            🔄 <span>REINICIAR</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Stage Center Content -->
+    <main class="arena-stage">
+      
+      <!-- LEFT SIDE: MEU BEY CARD (IN-PLACE MORPHING VERTICAL REEL) -->
+      <div class="side-stage left-stage" id="stage-left">
+        <div class="card-bey-display card-bey-red" id="card-bey-red">
+          <span class="card-bey-tag">MEU BEYBLADE</span>
+          
+          <!-- In-Place Vertical Slot Window -->
+          <div class="card-bey-number-window">
+            <div class="vs-slot-pointer pointer-left">►</div>
+            <div class="vs-slot-pointer pointer-right">◄</div>
+            <div class="card-vertical-track" id="track-my-bey">
+              <span id="val-my-bey" class="num-glow">#?</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Finish Action Buttons (Red Side) -->
+        <div class="side-finish-panel">
+          <span class="panel-title">REGISTRAR PONTO (VOCÊ)</span>
+          <div class="finish-buttons-grid">
+            <button class="btn-finish finish-spin" data-blader="1" data-pts="1" data-type="Spin Finish">
+              <span class="finish-icon">🌀</span>
+              <div class="finish-details">
+                <span class="finish-name">SPIN FINISH (+1)</span>
+                <span class="hotkey-badge">[ Q ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-burst" data-blader="1" data-pts="2" data-type="Burst Finish">
+              <span class="finish-icon">💥</span>
+              <div class="finish-details">
+                <span class="finish-name">BURST FINISH (+2)</span>
+                <span class="hotkey-badge">[ W ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-over" data-blader="1" data-pts="2" data-type="Over Finish">
+              <span class="finish-icon">🚪</span>
+              <div class="finish-details">
+                <span class="finish-name">OVER FINISH (+2)</span>
+                <span class="hotkey-badge">[ E ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-xtreme" data-blader="1" data-pts="3" data-type="Xtreme Finish">
+              <span class="finish-icon">⚡</span>
+              <div class="finish-details">
+                <span class="finish-name">XTREME FINISH (+3)</span>
+                <span class="hotkey-badge">[ R ]</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RPM Velocity Gauge Overlay (Spins during Draw) -->
+      <div id="rpm-gauge" class="rpm-gauge hidden">
+        <span class="rpm-title">⚡ X-DRIVE VELOCITY</span>
+        <span id="val-rpm-num" class="rpm-value">00,000 RPM</span>
+      </div>
+
+      <!-- RIGHT SIDE: BEY ADVERSÁRIO CARD (IN-PLACE MORPHING VERTICAL REEL) -->
+      <div class="side-stage right-stage" id="stage-right">
+        <div class="card-bey-display card-bey-blue" id="card-bey-blue">
+          <span class="card-bey-tag">BEY ADVERSÁRIO</span>
+          
+          <!-- In-Place Vertical Slot Window -->
+          <div class="card-bey-number-window">
+            <div class="vs-slot-pointer pointer-left">►</div>
+            <div class="vs-slot-pointer pointer-right">◄</div>
+            <div class="card-vertical-track" id="track-adv-bey">
+              <span id="val-adv-bey" class="num-glow">#?</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Finish Action Buttons (Blue Side) -->
+        <div class="side-finish-panel">
+          <span class="panel-title">REGISTRAR PONTO (ADVERSÁRIO)</span>
+          <div class="finish-buttons-grid">
+            <button class="btn-finish finish-spin" data-blader="2" data-pts="1" data-type="Spin Finish">
+              <span class="finish-icon">🌀</span>
+              <div class="finish-details">
+                <span class="finish-name">SPIN FINISH (+1)</span>
+                <span class="hotkey-badge">[ U ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-burst" data-blader="2" data-pts="2" data-type="Burst Finish">
+              <span class="finish-icon">💥</span>
+              <div class="finish-details">
+                <span class="finish-name">BURST FINISH (+2)</span>
+                <span class="hotkey-badge">[ I ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-over" data-blader="2" data-pts="2" data-type="Over Finish">
+              <span class="finish-icon">🚪</span>
+              <div class="finish-details">
+                <span class="finish-name">OVER FINISH (+2)</span>
+                <span class="hotkey-badge">[ O ]</span>
+              </div>
+            </button>
+
+            <button class="btn-finish finish-xtreme" data-blader="2" data-pts="3" data-type="Xtreme Finish">
+              <span class="finish-icon">⚡</span>
+              <div class="finish-details">
+                <span class="finish-name">XTREME FINISH (+3)</span>
+                <span class="hotkey-badge">[ P ]</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- CONFIG MODAL OVERLAY -->
+  <div id="config-modal" class="modal-overlay hidden">
+    <div class="modal-drawer">
+      <div class="drawer-header">
+        <h2>⚙️ Configurações da Arena</h2>
+        <button id="btn-close-config" class="btn-icon" aria-label="Fechar configurações">✖</button>
+      </div>
+
+      <div id="config-error-msg" class="config-error-alert hidden"></div>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <h3>🎰 Coleção de Beyblades</h3>
+          <div class="form-group">
+            <label for="cfg-min-num">Número Mínimo (Ex: 1):</label>
+            <div class="number-stepper">
+              <button type="button" class="btn-step" data-target="cfg-min-num" data-step="-1" aria-label="Diminuir Mínimo">−</button>
+              <input type="number" id="cfg-min-num" class="input-styled input-number" value="1" min="0">
+              <button type="button" class="btn-step" data-target="cfg-min-num" data-step="1" aria-label="Aumentar Mínimo">+</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cfg-max-num">Total de Beys na Coleção (1 até N):</label>
+            <div class="number-stepper">
+              <button type="button" class="btn-step" data-target="cfg-max-num" data-step="-1" aria-label="Diminuir Total">−</button>
+              <input type="number" id="cfg-max-num" class="input-styled input-number" value="100" min="2" max="999999">
+              <button type="button" class="btn-step" data-target="cfg-max-num" data-step="1" aria-label="Aumentar Total">+</button>
+            </div>
+          </div>
+          <div class="form-group checkbox-group">
+            <label class="toggle-checkbox">
+              <input type="checkbox" id="cfg-allow-dup">
+              <span>Permitir 2 Beys iguais no mesmo combate</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="config-card">
+          <h3>🏆 Regras do Placar</h3>
+          <div class="form-group">
+            <label for="cfg-target-score">Meta de Pontos para Vitória:</label>
+            <div class="number-stepper">
+              <button type="button" class="btn-step" data-target="cfg-target-score" data-step="-1" aria-label="Diminuir Meta">−</button>
+              <input type="number" id="cfg-target-score" class="input-styled input-number" value="4" min="1" max="20">
+              <button type="button" class="btn-step" data-target="cfg-target-score" data-step="1" aria-label="Aumentar Meta">+</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cfg-blader1-name">Seu Nome (Lado Vermelho):</label>
+            <input type="text" id="cfg-blader1-name" class="input-styled" value="VOCÊ" maxlength="16">
+          </div>
+          <div class="form-group">
+            <label for="cfg-blader2-name">Nome do Adversário (Lado Azul):</label>
+            <input type="text" id="cfg-blader2-name" class="input-styled" value="ADVERSÁRIO" maxlength="16">
+          </div>
+        </div>
+      </div>
+
+      <div class="config-actions">
+        <button id="btn-save-config" class="btn-action-primary">💾 Salvar Alterações</button>
+        <button id="btn-reset-default-config" class="btn-secondary">Restaurar Padrões</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY MODAL OVERLAY -->
+  <div id="history-modal" class="modal-overlay hidden">
+    <div class="modal-drawer">
+      <div class="drawer-header">
+        <h2>📜 Histórico da Partida & Sorteios</h2>
+        <button id="btn-close-history" class="btn-icon" aria-label="Fechar histórico">✖</button>
+      </div>
+
+      <div class="history-grid">
+        <div class="history-card">
+          <h3>🏆 Histórico de Pontuação</h3>
+          <ul id="score-log-list" class="log-list">
+            <li class="empty-log">Nenhum ponto registrado ainda.</li>
+          </ul>
+        </div>
+        <div class="history-card">
+          <h3>🎰 Histórico de Combates Sorteados</h3>
+          <ul id="solo-draw-log-list" class="log-list">
+            <li class="empty-log">Nenhum sorteio realizado ainda.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VICTORY MODAL OVERLAY -->
+  <div id="victory-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="victory-crown">👑</div>
+      <h2 class="victory-title">VITÓRIA DA PARTIDA!</h2>
+      <h3 class="winner-name" id="modal-winner-name">VOCÊ</h3>
+      <div class="modal-score" id="modal-final-score">4 - 2</div>
+
+      <div class="modal-actions">
+        <button id="btn-modal-new-match" class="btn-action-primary">🔥 NOVA PARTIDA</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

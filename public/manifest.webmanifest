@@ -1,0 +1,19 @@
+{
+  "name": "X-Drive Arena",
+  "short_name": "X-Drive",
+  "description": "Arena digital para partidas de Beyblade X.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#070a0f",
+  "theme_color": "#070a0f",
+  "icons": [
+    {
+      "src": "/icon.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
