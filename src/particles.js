@@ -14,6 +14,7 @@ class ParticleEngine {
     this.rayAngle = 0;
     this.isHyperdrive = false;
     this.hyperIntensity = 0;
+    this.victoryTimers = [];
   }
 
   init() {
@@ -80,6 +81,59 @@ class ParticleEngine {
         opacity: 1
       });
     }
+  }
+
+  triggerTreasureFountain(winnerSide = 1) {
+    this.stopTreasureFountain();
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const bursts = reducedMotion ? [0] : [0, 150, 320, 520, 760];
+    const amount = reducedMotion ? 45 : 82;
+
+    bursts.forEach((delay, burstIndex) => {
+      const timer = setTimeout(() => {
+        const accent = winnerSide === 1 ? '#ff0055' : '#00f0ff';
+        const colors = [
+          '#ffcc00',
+          '#ffe783',
+          '#ffffff',
+          accent,
+          '#00ff88',
+          '#b500ff'
+        ];
+
+        for (let i = 0; i < amount; i++) {
+          const spread = (Math.random() - 0.5) * Math.min(this.width * 0.24, 280);
+          const direction = Math.random() < 0.5 ? -1 : 1;
+          const kindRoll = Math.random();
+
+          this.confettis.push({
+            x: this.width / 2 + spread,
+            y: this.height - 4,
+            size: Math.random() * 8 + 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: spread * 0.018 + direction * (Math.random() * 5 + 1.5),
+            vy: -(Math.random() * 13 + 15 + burstIndex * 0.8),
+            gravity: Math.random() * 0.12 + 0.22,
+            rotation: Math.random() * 360,
+            vRot: (Math.random() - 0.5) * 18,
+            opacity: 1,
+            fade: Math.random() * 0.0025 + 0.0025,
+            kind: kindRoll < 0.34 ? 'coin' : (kindRoll < 0.72 ? 'gem' : 'shard'),
+            glow: true,
+            treasure: true
+          });
+        }
+      }, delay);
+
+      this.victoryTimers.push(timer);
+    });
+  }
+
+  stopTreasureFountain() {
+    this.victoryTimers.forEach(timer => clearTimeout(timer));
+    this.victoryTimers = [];
+    this.confettis = this.confettis.filter(particle => !particle.treasure);
   }
 
   triggerXDashSparks() {
@@ -211,7 +265,7 @@ class ParticleEngine {
         c.y += c.vy;
         c.vy += c.gravity;
         c.rotation += c.vRot;
-        c.opacity -= 0.006;
+        c.opacity -= c.fade || 0.006;
 
         if (c.opacity <= 0 || c.y > this.height) {
           this.confettis.splice(i, 1);
@@ -222,8 +276,35 @@ class ParticleEngine {
         this.confettiCtx.translate(c.x, c.y);
         this.confettiCtx.rotate((c.rotation * Math.PI) / 180);
         this.confettiCtx.fillStyle = c.color;
+        this.confettiCtx.strokeStyle = c.color;
         this.confettiCtx.globalAlpha = Math.max(0, c.opacity);
-        this.confettiCtx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 1.5);
+        if (c.glow) {
+          this.confettiCtx.shadowColor = c.color;
+          this.confettiCtx.shadowBlur = 12;
+        }
+
+        if (c.kind === 'coin') {
+          this.confettiCtx.beginPath();
+          this.confettiCtx.ellipse(0, 0, c.size * 0.72, c.size, 0, 0, Math.PI * 2);
+          this.confettiCtx.fill();
+          this.confettiCtx.lineWidth = Math.max(1, c.size * 0.16);
+          this.confettiCtx.strokeStyle = 'rgba(255,255,255,0.72)';
+          this.confettiCtx.stroke();
+        } else if (c.kind === 'gem') {
+          this.confettiCtx.beginPath();
+          this.confettiCtx.moveTo(0, -c.size);
+          this.confettiCtx.lineTo(c.size * 0.8, -c.size * 0.15);
+          this.confettiCtx.lineTo(c.size * 0.45, c.size);
+          this.confettiCtx.lineTo(-c.size * 0.45, c.size);
+          this.confettiCtx.lineTo(-c.size * 0.8, -c.size * 0.15);
+          this.confettiCtx.closePath();
+          this.confettiCtx.fill();
+          this.confettiCtx.strokeStyle = 'rgba(255,255,255,0.75)';
+          this.confettiCtx.lineWidth = 1;
+          this.confettiCtx.stroke();
+        } else {
+          this.confettiCtx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 1.7);
+        }
         this.confettiCtx.restore();
       }
     }

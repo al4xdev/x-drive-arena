@@ -14,6 +14,7 @@ export class ScorekeeperController {
     this.longPressTimer = null;
     this.suppressNextArenaClick = false;
     this.suppressClickTimer = null;
+    this.comboTimer = null;
   }
 
   init() {
@@ -186,11 +187,15 @@ export class ScorekeeperController {
 
     this.save();
     this.render();
+    const wonMatch = (bladerNum === 1 ? this.blader1Score : this.blader2Score) >= this.targetScore;
+    if (wonMatch) this.clearTransientFeedback();
 
     // Trigger visual score bump & screen shake & arcade toast
     this.triggerScoreBump(bladerNum);
     this.triggerScreenShake(pts);
-    this.triggerFinishToast(bladerNum, bladerName, pts, finishType);
+    if (!wonMatch) {
+      this.triggerFinishToast(bladerNum, bladerName, pts, finishType);
+    }
 
     // Particle FX based on Finish Type
     if (pts >= 3) {
@@ -202,9 +207,11 @@ export class ScorekeeperController {
 
     // Trigger Win Streak Combo Toast if streak >= 2
     const currentStreak = bladerNum === 1 ? this.blader1Streak : this.blader2Streak;
-    if (currentStreak >= 2) {
-      setTimeout(() => {
+    if (!wonMatch && currentStreak >= 2) {
+      clearTimeout(this.comboTimer);
+      this.comboTimer = setTimeout(() => {
         this.triggerComboToast(bladerNum, bladerName, currentStreak);
+        this.comboTimer = null;
       }, 350);
     }
 
@@ -220,6 +227,13 @@ export class ScorekeeperController {
     toast.innerHTML = `🔥 ${streak}x STREAK! ${bladerName.toUpperCase()} IS ON FIRE!`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 1600);
+  }
+
+  clearTransientFeedback() {
+    clearTimeout(this.comboTimer);
+    this.comboTimer = null;
+    document.querySelector('.finish-toast-banner')?.remove();
+    document.querySelector('.combo-toast-banner')?.remove();
   }
 
   triggerScoreBump(bladerNum) {
@@ -301,14 +315,15 @@ export class ScorekeeperController {
       if (this.victoryTimer) clearTimeout(this.victoryTimer);
       this.victoryTimer = setTimeout(() => {
         audio.playVictory();
-        particles.triggerVictoryConfetti();
-        this.showVictoryModal(bladerName);
+        particles.setHyperdrive(true);
+        particles.triggerTreasureFountain(bladerNum);
+        this.showVictoryModal(bladerName, bladerNum);
         this.victoryTimer = null;
       }, 300);
     }
   }
 
-  showVictoryModal(winnerName) {
+  showVictoryModal(winnerName, bladerNum) {
     const modal = document.getElementById('victory-modal');
     const winnerEl = document.getElementById('modal-winner-name');
     const scoreEl = document.getElementById('modal-final-score');
@@ -316,7 +331,12 @@ export class ScorekeeperController {
     if (modal && winnerEl && scoreEl) {
       winnerEl.textContent = winnerName;
       scoreEl.textContent = `${this.blader1Score} - ${this.blader2Score}`;
+      modal.classList.toggle('victory-red', bladerNum === 1);
+      modal.classList.toggle('victory-blue', bladerNum === 2);
       modal.classList.remove('hidden');
+      document.body.classList.remove('victory-celebration');
+      void document.body.offsetWidth;
+      document.body.classList.add('victory-celebration');
     }
   }
 
@@ -328,7 +348,12 @@ export class ScorekeeperController {
     const modal = document.getElementById('victory-modal');
     if (modal) {
       modal.classList.add('hidden');
+      modal.classList.remove('victory-red', 'victory-blue');
     }
+    document.body.classList.remove('victory-celebration');
+    this.clearTransientFeedback();
+    particles.stopTreasureFountain();
+    particles.setHyperdrive(false);
   }
 
   save() {

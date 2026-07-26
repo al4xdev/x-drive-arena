@@ -300,14 +300,19 @@
   </div>
 
   <!-- VICTORY MODAL OVERLAY -->
-  <div id="victory-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="victory-crown">👑</div>
-      <h2 class="victory-title">VITÓRIA DA PARTIDA!</h2>
+  <div id="victory-modal" class="modal-overlay victory-overlay hidden">
+    <div class="victory-stage modal-card" role="dialog" aria-modal="true" aria-labelledby="victory-heading">
+      <div class="victory-x-mark" aria-hidden="true">X</div>
+      <div class="victory-crown" aria-hidden="true">♛</div>
+      <span class="victory-eyebrow">X-DRIVE ARENA // CHAMPION</span>
+      <h2 class="victory-title" id="victory-heading">VITÓRIA DA PARTIDA!</h2>
       <h3 class="winner-name" id="modal-winner-name">VOCÊ</h3>
-      <div class="modal-score" id="modal-final-score">4 - 2</div>
+      <div class="victory-scoreline">
+        <span>PLACAR FINAL</span>
+        <strong class="modal-score" id="modal-final-score">4 - 2</strong>
+      </div>
 
-      <div class="modal-actions">
+      <div class="modal-actions victory-actions">
         <button id="btn-modal-new-match" class="btn-action-primary">🔥 NOVA PARTIDA</button>
       </div>
     </div>
