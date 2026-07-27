@@ -62,7 +62,7 @@ The release APK supports Android 7.0 and newer. It is a sideload build, so Andro
 
 ## Run the PWA
 
-Requirements: Node.js 22 or newer and npm.
+Requirements: Node.js 24 or newer and npm.
 
 ```sh
 npm ci
@@ -80,7 +80,7 @@ npm run preview -- --host
 
 ## Build the Android APK
 
-Requirements: Node.js 22 or newer, JDK 21, and an Android SDK with API 36.
+Requirements: Node.js 24 or newer, JDK 21, and an Android SDK with API 36.
 
 ```sh
 npm ci
