@@ -5,6 +5,9 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
 output_path="${1:-${repo_root}/.ci-cd/artifacts/X-Drive-Arena-debug.apk}"
+if [[ "${output_path}" != /* ]]; then
+  output_path="${repo_root}/${output_path}"
+fi
 
 cd "${repo_root}"
 
