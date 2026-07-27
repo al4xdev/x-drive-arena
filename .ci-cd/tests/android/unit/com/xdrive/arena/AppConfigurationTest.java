@@ -9,7 +9,7 @@ public class AppConfigurationTest {
     @Test
     public void applicationMetadataMatchesPublishedPackage() {
         assertEquals("com.xdrive.arena", BuildConfig.APPLICATION_ID);
-        assertEquals("1.0", BuildConfig.VERSION_NAME);
-        assertEquals(1, BuildConfig.VERSION_CODE);
+        assertEquals("1.0.1", BuildConfig.VERSION_NAME);
+        assertEquals(2, BuildConfig.VERSION_CODE);
     }
 }
