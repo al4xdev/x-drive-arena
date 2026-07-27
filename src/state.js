@@ -1,8 +1,8 @@
 // Application State & LocalStorage Manager for Beyblade X Solo Arena
 
-const STORAGE_KEY = 'beyx_arena_solo_state_v2';
+export const STORAGE_KEY = 'beyx_arena_solo_state_v2';
 
-const defaultState = {
+export const defaultState = {
   config: {
     minNum: 1,
     maxNum: 100,
@@ -21,7 +21,15 @@ const defaultState = {
   }
 };
 
-class StateManager {
+function createDefaultState() {
+  return {
+    config: { ...defaultState.config },
+    match: { ...defaultState.match, history: [] },
+    gacha: { ...defaultState.gacha, history: [] }
+  };
+}
+
+export class StateManager {
   constructor() {
     this.state = this.loadState();
   }
@@ -31,7 +39,13 @@ class StateManager {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const loaded = JSON.parse(saved);
-        const merged = { ...defaultState, ...loaded, config: { ...defaultState.config, ...loaded.config } };
+        const merged = {
+          ...createDefaultState(),
+          ...loaded,
+          config: { ...defaultState.config, ...loaded.config },
+          match: { ...defaultState.match, ...loaded.match },
+          gacha: { ...defaultState.gacha, ...loaded.gacha }
+        };
         if (merged.config.blader1Name === 'Você') merged.config.blader1Name = 'YOU';
         if (merged.config.blader2Name === 'Adversário') merged.config.blader2Name = 'OPPONENT';
         return merged;
@@ -39,7 +53,7 @@ class StateManager {
     } catch (e) {
       console.warn('Unable to load state from LocalStorage:', e);
     }
-    return defaultState;
+    return createDefaultState();
   }
 
   saveState() {

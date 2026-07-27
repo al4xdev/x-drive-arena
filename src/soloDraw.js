@@ -5,6 +5,16 @@ import { audio } from './audio.js';
 import { particles } from './particles.js';
 import { i18n } from './i18n.js';
 
+export function isConfirmedDoubleTap(previousTap, currentTap, maxDelay = 600, maxDistance = 72) {
+  if (!previousTap || !currentTap) return false;
+  const elapsed = currentTap.time - previousTap.time;
+  const distance = Math.hypot(
+    currentTap.x - previousTap.x,
+    currentTap.y - previousTap.y
+  );
+  return elapsed >= 0 && elapsed <= maxDelay && distance <= maxDistance;
+}
+
 export class SoloDrawController {
   constructor() {
     this.isSpinning = false;
@@ -45,12 +55,11 @@ export class SoloDrawController {
       if (this.requiresTouchConfirmation(e)) {
         const now = performance.now();
         const previousTap = this.lastTouchTap;
-        const isDoubleTap = previousTap
-          && now - previousTap.time <= 600
-          && Math.hypot(e.clientX - previousTap.x, e.clientY - previousTap.y) <= 72;
+        const currentTap = { time: now, x: e.clientX, y: e.clientY };
+        const isDoubleTap = isConfirmedDoubleTap(previousTap, currentTap);
 
         if (!isDoubleTap) {
-          this.lastTouchTap = { time: now, x: e.clientX, y: e.clientY };
+          this.lastTouchTap = currentTap;
           this.showDoubleTapHint();
           return;
         }

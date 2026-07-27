@@ -6,6 +6,7 @@
 
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](https://github.com/al4xdev/x-drive-arena/releases/latest)
 [![PWA](https://img.shields.io/badge/PWA-offline--ready-5A0FC8?logo=pwa&logoColor=white)](#run-the-pwa)
+[![CI](https://github.com/al4xdev/x-drive-arena/actions/workflows/ci.yml/badge.svg)](https://github.com/al4xdev/x-drive-arena/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/al4xdev/x-drive-arena?display_name=tag)](https://github.com/al4xdev/x-drive-arena/releases/latest)
 
 <table>
@@ -53,7 +54,7 @@ Tapping outside an open scoring panel closes it without accidentally starting th
 ## Install on Android
 
 1. Open the [latest release](https://github.com/al4xdev/x-drive-arena/releases/latest).
-2. Download `X-Drive-Arena-v1.0.0.apk`.
+2. Download the `X-Drive-Arena-v*.apk` file.
 3. Allow your browser or file manager to install apps from that source when Android asks.
 4. Open X-Drive Arena and rotate the phone to landscape.
 
@@ -61,7 +62,7 @@ The release APK supports Android 7.0 and newer. It is a sideload build, so Andro
 
 ## Run the PWA
 
-Requirements: Node.js 20 or newer and npm.
+Requirements: Node.js 22 or newer and npm.
 
 ```sh
 npm ci
@@ -79,26 +80,45 @@ npm run preview -- --host
 
 ## Build the Android APK
 
-Requirements: Node.js 20 or newer, JDK 21, and an Android SDK with API 36.
+Requirements: Node.js 22 or newer, JDK 21, and an Android SDK with API 36.
 
 ```sh
 npm ci
-npm run build
-npx cap sync android
-cd android
-./gradlew assembleDebug
+.ci-cd/android/build-apk.sh
 ```
 
-The APK is generated at:
+The script builds the PWA, synchronizes Capacitor, runs the Android unit tests, assembles the debug APK, and prints its SHA-256 checksum. The default output is:
 
 ```text
-android/app/build/outputs/apk/debug/app-debug.apk
+.ci-cd/artifacts/X-Drive-Arena-debug.apk
 ```
+
+## Tests
+
+Run the web unit test suite with:
+
+```sh
+npm test
+```
+
+The suite covers persistent state, history limits, language switching, translation parity, double-tap boundaries, keyboard shortcuts, and modal/input guards. Android configuration tests run automatically as part of `.ci-cd/android/build-apk.sh`.
+
+All test sources live under `.ci-cd/tests/`.
+
+## Automation
+
+- `CI` runs on every push to `main`, every pull request, and manual dispatch.
+- The web job runs unit tests, builds the PWA, and uploads the production files.
+- The Android job runs Gradle unit tests, builds an installable debug APK, and uploads both the APK and test reports.
+- Pushing a `v*` tag runs the Android release workflow, creates or updates the GitHub release, and attaches the APK plus its SHA-256 file.
 
 ## Project layout
 
 | Path | Purpose |
 | --- | --- |
+| `.ci-cd/android/` | Reusable Android test and APK build automation |
+| `.ci-cd/tests/` | Web, Android unit, and Android instrumented tests |
+| `.github/workflows/` | GitHub Actions entrypoints required by GitHub |
 | `src/` | Arena controllers, state, audio, particles, translations, and styles |
 | `android/` | Capacitor Android project and immersive fullscreen integration |
 | `public/` | PWA manifest, service worker, and static assets |

@@ -1,7 +1,7 @@
 // Internationalization (i18n) Module for Beyblade X Arena Digital
 // Default language: English ('en'), fallback support for Portuguese ('pt')
 
-const LANG_STORAGE_KEY = 'beyx_arena_lang_v1';
+export const LANG_STORAGE_KEY = 'beyx_arena_lang_v1';
 
 export const translations = {
   en: {
@@ -118,7 +118,7 @@ export const translations = {
   }
 };
 
-class I18nManager {
+export class I18nManager {
   constructor() {
     this.currentLang = this.loadLanguage();
   }
